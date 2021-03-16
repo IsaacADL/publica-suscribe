@@ -271,9 +271,15 @@ class XiaomiMyBand:
         return random.randint(1,2)
 
     def simulate_first_intake(self):
-        hour = random.randint(00, int(time.strftime("%H")))
-        minute = time.strftime("%M")
-
+        #Se generan horas aleatorias 8, 12, 0 24 horas antes que la actual.
+        hour = int(time.strftime("%H"))
+        minute = time.strftime("%M") 
+        num = random.randint(1,3)
+        if num ==1:
+            hour = hour-8 if (hour-8)>=0 else (hour-8)+24
+        elif num == 2:
+            hour = hour-12 if (hour-12)>=0 else (hour-12)+24
+        
         return str(hour)+":"+str(minute)
 
     def simulate_med_hours(self):
