@@ -89,15 +89,21 @@ class ProcesadorRitmoCardiaco:
 
     def callback(self, ch, method, properties, body):
         json_message = self.string_to_json(body)
-        date = json_message['datetime']
+        current_date = json_message['datetime']
         #Se obtienen las horas y minutos actuales.
-        current = date[11] + date[12] + ":" + date[14] + date[15]
-        current_time = datetime.datetime.strptime(current, '%H:%M').time()
+        current_hour = current_date[11] + current_date[12]
+        current_minute =  current_date[14] + current_date[15]
         #Se obtienen las horas y minutos de la primera ingesta de medicamento.
         intake_time = datetime.datetime.strptime(json_message['first_intake'], '%H:%M').time()
+        intake_hour = intake_time.hour
+        intake_minute = intake_time.minute
         #Se calcula la hora de siguiente ingesta,
+
+        dose_time = int(json_message['hour'])#Lapso de tiempo entre ingestas
+        current_intake = (int(intake_hour)+dose_time) 
+        current_intake = current_intake if current_intake<24 else current_intake-24
         #debe ser igual a la hora actual para notificar.
-        if  abs((intake_time.hour + int(json_message['hour'] ) - 24)) == current_time.hour and intake_time.minute == current_time.minute:
+        if  str(current_intake) == str(current_hour) and current_minute == str(intake_minute):
             monitor = Monitor()
             monitor.print_med_notification(json_message['datetime'], json_message['id'],
              json_message['dose'], json_message['medicine'], json_message['model'], json_message['hour'])
