@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------------
 # Archivo: procesador_de_posicion.py
 # Capitulo: 3 Estilo Publica-Subscribe
-# Autor(es): Perla Velasco & Yonathan Mtz.
+# Autor(es): Andrea Sarahí Rodarte María Guadalupe Celaya e Isaac Alejandro Díaz.
 # Version: 2.0.1 Mayo 2017
 # Descripción:
 #
@@ -87,8 +87,10 @@ class ProcesadorPosicion:
 
     def callback(self, ch, method, properties, body):
         json_message = self.string_to_json(body)
+        # Se suman los valores de los ejes del acelerometro.
         suma = float(json_message['x_position']) + float(json_message['y_position'])+ float(json_message['z_position'])
-        
+        #Si los ejes están en (0,1,0) o valores parecidos, cercanos a uno, el acelerometro se encuentra en reposo.
+        #De otra forma, sumando más de dos, se presenta una fuerza mayor, es decir, es probable que esté cayendo.
         if suma > 2:
             monitor = Monitor()
             monitor.print_notification(json_message['datetime'], json_message['id'], suma, 'movimiento', json_message['model'])
