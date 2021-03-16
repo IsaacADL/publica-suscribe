@@ -36,6 +36,21 @@
 #           |                        |  - name_param: signo vi- |                       |
 #           |                        |     tal que se desea no- |                       |
 #           +------------------------+--------------------------+-----------------------+
+#           |print_med_notification()|  - datetime: fecha en que|  - Imprime el mensa-  |
+#           |                        |     se envió el mensaje. |    je recibido.       |
+#           |                        |  - id: identificador del |                       |
+#           |                        |     dispositivo que      |                       |
+#           |                        |     envió el mensaje.    |                       |
+#           |                        |  - dose: valor de dosis  |                       |
+#           |                        |     que se desea notifi- |                       |
+#           |                        |     car.                 |                       |
+#           |                        |  - name_param: signo vi- |                       |
+#           |                        |     tal que se desea no- |                       |
+#           |                        |     tificar.             |                       |
+#           |                        |  -hours: indica el inter-|                       |
+#           |                        |      valo de los medica- |                       |
+#           |                        |      mentos              |                       |
+#           +------------------------+--------------------------+-----------------------+
 #           |   format_datetime()    |  - datetime: fecha que se|  - Formatea la fecha  |
 #           |                        |     formateará.          |    en que se recibió  |
 #           |                        |                          |    el mensaje.        |
@@ -53,6 +68,15 @@ class Monitor:
         print("    Se ha detectado un incremento de " + str(name_param) + " (" + str(value) + ")" + " a las " + str(self.format_datetime(datetime)) + " en el adulto mayor que utiliza el dispositivo " + str(model) + ":" + str(id))
         print("")
         print("")
+
+    def print_med_notification(self, datetime, id, dose, name_param, model, hours):
+        print("  ---------------------------------------------------")
+        print("    ADVERTENCIA")
+        print("  ---------------------------------------------------")
+        print("    Se debe dar medicamento " + str(name_param) + " (" + str(dose) + " tabletas) por ingesta cada " +str(hours) + " horas. A las " + str(self.format_datetime(datetime)) + " al adulto mayor que utiliza el dispositivo " + str(model) + ":" + str(id))
+        print("")
+        print("")
+
 
     def format_datetime(self, datetime):
         values_datetime = datetime.split(':')
