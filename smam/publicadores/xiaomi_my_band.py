@@ -77,6 +77,22 @@
 #           |                             |          Ninguno         |  - Simula la presión  |
 #           | simulate_blood_preasure()   |                          |    arterial.          |
 #           +-----------------------------+--------------------------+-----------------------+
+#           |                             |          Ninguno         |  - Simula los medica- |
+#           | simulate_meds()             |                          |    mentos de un adulto|
+#           |                             |                          |    mayor.             |
+#           +-----------------------------+--------------------------+-----------------------+
+#           |                             |          Ninguno         |  - Simula las dosis de|
+#           | simulate_dose()             |                          |    medicamentos.      |
+#           +-----------------------------+--------------------------+-----------------------+
+#           |                             |          Ninguno         |  -  Simula la hora de |
+#           | simulate_first_intake()     |                          |     primera ingesta de|
+#           |                             |                          |     medicamneto.      |
+#           +-----------------------------+--------------------------+-----------------------+
+#           |                             |          Ninguno         |  -  Simula el espacio |
+#           | simulate_med_hours()        |                          |     de horas para     |
+#           |                             |                          |     tomar medicamneto.|
+#           +-----------------------------+--------------------------+-----------------------+
+#
 #
 #-------------------------------------------------------------------------
 import pika
@@ -174,7 +190,29 @@ class XiaomiMyBand:
             delivery_mode=2,))  # Se realiza la publicación del mensaje en el Distribuidor de Mensajes
         connection.close()  # Se cierra la conexión
 
+        time.sleep(1)
         
+        message = {}
+        message['medicine'] = self.simulate_meds()
+        message['dose'] = self.simulate_dose()
+        message['first_intake'] = self.simulate_first_intake()
+        message['hour'] = self.simulate_med_hours()
+        message['id'] = str(self.id)
+        message['datetime'] = self.simulate_datetime()
+        message['producer'] = self.producer
+        message['model'] = self.model
+        message['hardware_version'] = self.hardware_version
+        message['software_version'] = self.software_version
+        # Se establece la conexión con el Distribuidor de Mensajes
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        # Se solicita un canal por el cuál se enviarán los signos vitales
+        channel = connection.channel()
+        channel.queue_declare(queue='medicine', durable=True)
+        channel.basic_publish(exchange='', routing_key='medicine', body=str(message), properties=pika.BasicProperties(
+            delivery_mode=2,))  # Se realiza la publicación del mensaje en el Distribuidor de Mensajes
+        connection.close()  # Se cierra la conexión
+
+
 
     def simulate_datetime(self):
         return time.strftime("%d:%m:%Y:%H:%M:%S")
@@ -211,3 +249,41 @@ class XiaomiMyBand:
 
     def simulate_blood_preasure(self):
         return random.randint(100, 200)
+
+    def simulate_meds(self):
+        num = random.randint(1,6)
+        med = ""
+        if num==1:
+            med = "Paracetamol"
+        elif num==2:
+            med = "Ibuprofeno"
+        elif num==3:
+            med = "Insulina"
+        elif num==4:
+            med = "Furosemida"
+        elif num==5:
+            med = "Piroxicam"
+        elif num==6:
+            med = "Tolbutamida"
+        return med
+
+    def simulate_dose(self):
+        return random.randint(1,2)
+
+    def simulate_first_intake(self):
+        hour = random.randint(00, int(time.strftime("%H")))
+        minute = time.strftime("%M")
+
+        return str(hour)+":"+str(minute)
+
+    def simulate_med_hours(self):
+        num = random.randint(1,3)
+        hour = 0
+        if num == 1:
+            hour = 8
+        elif num == 2:
+            hour = 12
+        elif num == 3:
+            hour = 24
+        return hour
+            
